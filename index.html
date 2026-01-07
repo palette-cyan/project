@@ -1,0 +1,2619 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APPLE : The Invitation from Adam</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- 초기화 및 기본 설정 --- */
+        :root {
+            --bg-color: #050505;
+            --text-main: #d0d0d0;
+            --text-dim: #777777;
+            --accent-color: #cfcfcf;
+            --border-color: #333333;
+            --blood-color: #7a1a1a;
+            --glitch-color: #ff0000;
+            --font-kr: 'Nanum Myeongjo', serif;
+            --font-en: 'Playfair Display', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-kr);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-size: 16px;
+            position: relative;
+            transition: transform 0.1s, filter 0.1s;
+        }
+
+        body.destroyed {
+            transform: rotate(0.5deg) scale(1.01);
+            filter: contrast(1.3) brightness(0.7) blur(0.5px) grayscale(0.2);
+            overflow: hidden;
+        }
+
+        /* 전체 화면 노이즈(스캔라인) 효과 */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg, 
+                rgba(255, 0, 0, 0.06), 
+                rgba(0, 255, 0, 0.02), 
+                rgba(0, 0, 255, 0.06)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* 산산조각 효과 오버레이 */
+        .shatter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('https://png.pngtree.com/png-vector/20230814/ourmid/pngtree-broken-glass-texture-realistic-cracked-glass-effect-overlay-vector-png-image_9479998.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 120% 120%;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.5);
+            transition: opacity 0.05s ease-in, transform 0.1s cubic-bezier(0.1, 0.7, 0.1, 1);
+            mix-blend-mode: hard-light;
+            display: none;
+        }
+        
+        .shatter-overlay.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 섬광 효과 */
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #fff;
+            z-index: 10001;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .flash-overlay.boom {
+            animation: flashBang 0.2s ease-out forwards;
+        }
+
+        @keyframes flashBang {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* 글리치 이펙트 */
+        .glitch-active {
+            animation: glitch-anim 0.15s infinite linear alternate-reverse;
+            color: var(--glitch-color) !important;
+            text-shadow: -2px 0 var(--blood-color), 2px 0 #fff;
+            position: relative;
+            display: inline-block;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0) skewX(0deg); opacity: 1; filter: blur(0px); }
+            20% { transform: translate(-3px, 2px) skewX(5deg); opacity: 0.8; }
+            40% { transform: translate(3px, -2px) skewX(-5deg); filter: blur(1px); }
+            60% { transform: translate(-3px, 1px) skewX(2deg); opacity: 0.9; }
+            80% { transform: translate(2px, -3px) skewX(-2deg); }
+            100% { transform: translate(0) skewX(0deg); opacity: 1; filter: blur(0px); }
+        }
+
+        /* 화면 흔들림 */
+        .shake-screen {
+            animation: violentShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            background-color: #300 !important;
+        }
+
+        @keyframes violentShake {
+            10%, 90% { transform: translate3d(-3px, 2px, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(5px, -3px, 0) rotate(1deg); }
+            30%, 50%, 70% { transform: translate3d(-8px, 4px, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(8px, -4px, 0) rotate(2deg); }
+        }
+
+        /* 중간 문구 스타일 */
+        .mid-phrase-container {
+            text-align: center;
+            margin: 80px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+            z-index: 10;
+        }
+        .mid-phrase-container:hover {
+            transform: scale(1.05);
+        }
+        .mid-phrase {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--blood-color);
+            font-family: var(--font-kr);
+            letter-spacing: 10px;
+            text-shadow: 0 0 10px rgba(122, 26, 26, 0.5);
+        }
+
+        /* 레이아웃 유틸리티 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+            margin: 60px 0;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- [수정] 이미지 플레이스홀더 (NO IMAGE 문제 해결) --- */
+        .img-placeholder {
+            background-color: #111;
+            border: 1px dashed #444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .img-placeholder::after {
+            content: 'NO IMAGE';
+            position: absolute;
+            transform: rotate(-45deg);
+            z-index: 0; /* 이미지 뒤로 */
+        }
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            position: relative;
+            z-index: 1; /* 가상 요소보다 앞으로 */
+            background-color: #111; /* 이미지가 로드되면 불투명해져서 뒤를 가림 */
+        }
+
+        /* 헤더 */
+        header {
+            text-align: center;
+            padding: 80px 0 40px;
+            border-bottom: 2px double var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: var(--font-en);
+            font-size: 4rem;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+        }
+
+        .subtitle {
+            font-family: var(--font-en);
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        /* 편지 섹션 */
+        .letter-section {
+            background-color: #0e0e0e;
+            padding: 40px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .letter-section::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 6rem;
+            font-family: var(--font-en);
+            color: #1a1a1a;
+            z-index: 0;
+        }
+
+        #typewriter {
+            position: relative;
+            z-index: 1;
+            white-space: pre-wrap;
+            font-size: 1.1rem;
+            color: #ccc;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #ccc;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* 신문 기사 섹션 */
+        .newspaper-section {
+            background-color: #121212;
+            padding: 30px;
+            border: 1px solid #444;
+            margin-bottom: 60px;
+            font-family: var(--font-kr);
+        }
+
+        .news-header {
+            border-bottom: 2px solid var(--text-dim);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .news-title {
+            font-family: var(--font-en);
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .news-date {
+            font-family: var(--font-en);
+            color: var(--text-dim);
+            font-style: italic;
+        }
+
+        .news-content {
+            column-count: 2;
+            column-gap: 40px;
+            font-size: 0.95rem;
+            color: #aaa;
+            text-align: justify;
+            line-height: 1.8;
+        }
+        
+        .news-content p { margin-bottom: 15px; }
+
+        .news-highlight {
+            font-weight: bold;
+            color: var(--blood-color);
+            font-family: var(--font-en);
+            font-size: 1.1rem;
+            float: left;
+            margin-right: 10px;
+            line-height: 1;
+        }
+
+        /* 세계관 섹션 */
+        .worldview-section {
+            border-left: 2px solid var(--blood-color);
+            padding: 20px 20px 20px 30px;
+            background: linear-gradient(90deg, rgba(20,0,0,0.3), transparent);
+            margin-bottom: 60px;
+        }
+        
+        .worldview-title {
+            font-family: var(--font-en);
+            font-size: 1.8rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .worldview-text {
+            color: var(--text-dim);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* 착란과 광기 섹션 */
+        .sanity-section {
+            background-color: #080000;
+            border: 1px solid var(--blood-color);
+            padding: 30px;
+            margin-bottom: 60px;
+            position: relative;
+            box-shadow: inset 0 0 50px rgba(50, 0, 0, 0.3);
+        }
+
+        .sanity-title {
+            font-family: var(--font-en);
+            font-size: 2rem;
+            color: var(--blood-color);
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sanity-meter-box {
+            width: 100%;
+            height: 40px;
+            background: #111;
+            border: 1px solid #444;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .sanity-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #1a4a1a 0%, #3a3a1a 40%, #5a1a1a 100%);
+            width: 100%;
+            position: relative;
+        }
+        
+        .sanity-marker {
+            position: absolute;
+            top: -25px;
+            height: 75px;
+            width: 1px;
+            background-color: #fff;
+            z-index: 5;
+            opacity: 0.7;
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+        }
+        .sanity-marker::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -15px;
+            left: -10px;
+            color: #aaa;
+        }
+
+        .sanity-desc-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #222;
+            padding-top: 20px;
+        }
+        
+        .sanity-stage h4 {
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .sanity-stage p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+        
+        .warning-text {
+            color: var(--blood-color);
+            font-weight: bold;
+        }
+
+        /* 도시 구역 (탭) */
+        .districts-section h2 {
+            font-family: var(--font-en);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: inline-block;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-dim);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: var(--font-kr);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: var(--text-main);
+            color: var(--bg-color);
+            border-color: var(--text-main);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+            background: #141414;
+            padding: 30px;
+            border: 1px solid var(--border-color);
+            min-height: 200px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        /* --- [수정] 이미지 영역 노이즈 제거 (z-index 상향) --- */
+        .district-img-box {
+            width: 100%;
+            height: 250px; /* 높이는 유지하되 */
+            margin-bottom: 25px;
+            border-radius: 2px;
+            
+            /* [수정 1] 이미지가 찌그러지지 않고 박스에 꽉 차게 */
+            object-fit: cover; 
+            
+            /* [수정 2] 흑백 및 거친 필터 제거 (원래 코드 삭제) */
+            /* filter: grayscale(100%) contrast(1.2); */
+
+            /* [수정 3] TV 노이즈(스캔라인)보다 이미지 우선순위를 높여서 깨끗하게 보이게 함 */
+            position: relative;
+            z-index: 10000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5); /* 약간의 그림자로 입체감 추가 */
+        }
+
+        .tab-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            border-left: 3px solid var(--blood-color);
+            padding-left: 15px;
+        }
+
+        .keyword { color: var(--blood-color); font-weight: bold; }
+
+        /* 로턴 호텔 섹션 */
+        .lawton-section {
+            background-color: #0c0c0c;
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .lawton-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
+            color: var(--text-main);
+            font-family: var(--font-kr);
+        }
+        .lawton-title span {
+            font-family: var(--font-en);
+            font-size: 1.8rem;
+            color: var(--text-dim);
+            margin-left: 10px;
+        }
+
+        .hotel-intro-text {
+            column-count: 1;
+            text-align: center;
+            color: #999;
+            line-height: 1.8;
+            margin-top: 25px;
+            font-size: 1rem;
+        }
+
+        .hotel-features {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+            border-top: 1px solid #222;
+            padding-top: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .feature-item {
+            text-align: center;
+        }
+        .feature-icon {
+            font-family: var(--font-en);
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* --- [수정] 이미지 영역 노이즈 제거 --- */
+        .hotel-main-img {
+            width: 100%;
+            height: 300px;
+            border-radius: 2px;
+            filter: sepia(30%) grayscale(50%) contrast(1.1);
+            position: relative;
+            z-index: 10000;
+        }
+
+        /* 호텔 및 해결사 명부 */
+        .hotel-section { margin-top: 50px; }
+        .hotel-section h2 {
+            font-family: var(--font-en);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .hotel-desc {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+        }
+
+        .guest-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .guest-card {
+            background: #0f0f0f;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .guest-card:hover {
+            border-color: var(--blood-color);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(20, 0, 0, 0.5);
+            background: #161010;
+        }
+
+        /* --- [수정] 이미지 영역 노이즈 제거 --- */
+        .card-img-box {
+            width: 100px;
+            height: 120px;
+            flex-shrink: 0;
+            filter: sepia(50%) grayscale(80%);
+            position: relative;
+            z-index: 10000;
+        }
+
+        .room-number {
+            font-family: var(--font-en);
+            font-size: 3.5rem;
+            color: #1a1a1a;
+            position: absolute;
+            bottom: -10px;
+            right: 0px;
+            z-index: 0;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .guest-info { position: relative; z-index: 1; flex-grow: 1; }
+        .guest-name {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-main);
+            font-family: var(--font-kr);
+        }
+        .guest-role {
+            font-size: 0.9rem;
+            color: var(--blood-color);
+            font-weight: bold;
+            font-style: italic;
+            margin-bottom: 10px;
+            display: block;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            width: 100%;
+        }
+        .guest-details {
+            font-size: 0.9rem;
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .user-card {
+            border: 1px dashed var(--blood-color);
+            background: rgba(40, 0, 0, 0.1);
+        }
+        .user-card .guest-name { color: var(--blood-color); }
+
+        /* 고급 명함 팝업창 (Modal) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 10005;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .business-card {
+            width: 700px;
+            max-width: 90%;
+            background: #111;
+            border: 1px solid #333;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            display: flex;
+            gap: 30px;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+            font-family: var(--font-kr);
+        }
+        .modal-overlay.active .business-card {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #555;
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-family: var(--font-en);
+            transition: color 0.3s;
+        }
+        .close-btn:hover { color: var(--blood-color); }
+
+        .card-info-side {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-header {
+            border-bottom: 2px solid var(--blood-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .card-name {
+            font-size: 2rem;
+            color: var(--text-main);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .card-role {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            font-style: italic;
+            font-family: var(--font-en);
+        }
+
+        .card-body-row {
+            display: flex;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            align-items: baseline;
+        }
+        .card-label {
+            width: 80px;
+            color: #666;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .card-value {
+            color: #ccc;
+        }
+
+        .redacted {
+            background-color: #000;
+            color: #000;
+            padding: 0 5px;
+            position: relative;
+            user-select: none;
+        }
+        .redacted::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(20,20,20,0.8),
+                rgba(20,20,20,0.8) 2px,
+                #000 2px,
+                #000 4px
+            );
+            pointer-events: none;
+        }
+
+        .card-img-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-left: 1px solid #222;
+            padding-left: 30px;
+        }
+        
+        /* --- [수정] 이미지 영역 노이즈 제거 --- */
+        .card-portrait-box {
+            width: 100%;
+            height: 250px;
+            border: 1px solid #333;
+            background: #080808;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10000;
+        }
+        .card-room-number {
+            font-family: var(--font-en);
+            font-size: 2.5rem;
+            color: #222;
+            font-weight: bold;
+        }
+
+        /* 안개 효과 */
+        .fog-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        .fog-img {
+            position: absolute;
+            height: 100vh;
+            width: 300vw;
+            z-index: 1;
+            opacity: 0.6;
+            background: url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog1.png') repeat-x;
+            background-size: contain;
+            animation: fog 60s linear infinite;
+        }
+        .fog-img-2 {
+            z-index: 2;
+            background: url('https://raw.githubusercontent.com/danielstuart14/CSS_FOG_ANIMATION/master/fog2.png') repeat-x;
+            background-size: contain;
+            animation: fog 40s linear infinite;
+            margin-left: -50%;
+        }
+
+        @keyframes fog {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-200vw, 0, 0); }
+        }
+
+        /* 푸터 */
+        footer {
+            text-align: center;
+            padding: 60px 0;
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 40px;
+            border-top: 1px solid #1a1a1a;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 반응형 */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .tabs { flex-direction: column; }
+            .tab-btn { width: 100%; text-align: center; }
+            .newspaper-section .news-content { column-count: 1; } 
+            .sanity-desc-grid { grid-template-columns: 1fr; }
+            
+            .guest-grid { grid-template-columns: 1fr; }
+            .guest-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .card-img-box {
+                width: 120px;
+                height: 150px;
+                margin-bottom: 15px;
+            }
+            .room-number {
+                top: 10px;
+                right: 15px;
+                bottom: auto;
+                font-size: 2rem;
+                color: #222;
+            }
+            .business-card {
+                flex-direction: column-reverse;
+                width: 90%;
+                padding: 20px;
+            }
+            .card-img-side {
+                border-left: none;
+                padding-left: 0;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #222;
+                padding-bottom: 20px;
+            }
+            .card-portrait-box { height: 200px; }
+        }
+
+        /* --- [추가] 비밀 전송(Input) 섹션 스타일 --- */
+        .input-section {
+            margin-top: 60px;
+            margin-bottom: 60px;
+            padding: 40px;
+            border: 1px solid #333;
+            background: linear-gradient(180deg, #0a0a0a 0%, #111 100%);
+            text-align: center;
+            position: relative;
+        }
+
+        .input-title {
+            font-family: var(--font-en);
+            font-size: 1.8rem;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .terminal-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 텍스트 입력 영역 (타자기 느낌) */
+        .terminal-input {
+            width: 100%;
+            height: 150px;
+            background-color: #050505;
+            border: 1px solid #444;
+            color: #ddd;
+            font-family: var(--font-kr);
+            font-size: 1rem;
+            padding: 20px;
+            resize: none; /* 크기 조절 불가 */
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .terminal-input:focus {
+            border-color: var(--blood-color);
+            box-shadow: 0 0 10px rgba(122, 26, 26, 0.3);
+        }
+        .terminal-input::placeholder {
+            color: #444;
+            font-style: italic;
+        }
+
+        /* 전송 버튼 */
+        .transmit-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid var(--text-dim);
+            color: var(--text-dim);
+            padding: 10px 40px;
+            font-family: var(--font-en);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .transmit-btn:hover {
+            background-color: var(--blood-color);
+            border-color: var(--blood-color);
+            color: #fff;
+            box-shadow: 0 0 15px var(--blood-color);
+        }
+
+        /* 전송 결과 메시지 */
+        .response-msg {
+            margin-top: 20px;
+            min-height: 24px;
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-family: monospace; /* 기계적인 느낌 */
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .response-msg.show {
+            opacity: 1;
+        }
+
+        /* --- [수정/리뉴얼] 시크릿 인터페이스 (Dark UI) --- */
+        .secret-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.95); /* 거의 불투명한 검정 */
+            z-index: 20000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(5px);
+        }
+        .secret-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .secret-interface {
+            width: 900px;
+            max-width: 95%;
+            height: 80vh;
+            background-color: #080808;
+            border: 1px solid var(--blood-color); /* 붉은 테두리 */
+            box-shadow: 0 0 30px rgba(122, 26, 26, 0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 헤더 영역 */
+        .secret-header-bar {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #111, #080808);
+        }
+        .secret-title {
+            font-family: var(--font-en);
+            font-size: 2rem;
+            color: var(--blood-color);
+            letter-spacing: 5px;
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--blood-color);
+        }
+
+        /* 탭 네비게이션 */
+        .secret-tabs {
+            display: flex;
+            border-bottom: 1px solid #333;
+            background-color: #111;
+        }
+        .secret-tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            border-right: 1px solid #333;
+            color: #666;
+            font-family: var(--font-kr);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .secret-tab-btn:last-child { border-right: none; }
+        .secret-tab-btn:hover {
+            background-color: #1a1a1a;
+            color: #ccc;
+        }
+        .secret-tab-btn.active {
+            background-color: var(--blood-color);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* 컨텐츠 영역 */
+        .secret-body {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            color: #ccc;
+            font-family: var(--font-kr);
+        }
+
+        .secret-chapter {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .secret-chapter.active { display: block; }
+
+        .chapter-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            border-left: 3px solid var(--blood-color);
+            padding-left: 15px;
+        }
+
+        .secret-img-box {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+            filter: grayscale(80%) contrast(1.2) brightness(0.8);
+        }
+
+        .secret-text p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+            color: #999;
+        }
+        .secret-highlight {
+            color: var(--blood-color);
+            font-weight: bold;
+        }
+
+        /* 닫기 버튼 */
+        .secret-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #555;
+            padding: 5px 15px;
+            cursor: pointer;
+            font-family: var(--font-en);
+            transition: all 0.3s;
+        }
+        .secret-close-btn:hover {
+            border-color: var(--blood-color);
+            color: var(--blood-color);
+        }
+
+        /* --- [추가] 희생(SACRIFICE) 모드 스타일 --- */
+        .sacrifice-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #000;
+            z-index: 21000; /* Forbidden보다 더 위 */
+            display: none;
+            flex-direction: column;
+            padding: 40px;
+            overflow: hidden;
+        }
+        .sacrifice-overlay.open { display: flex; }
+
+        /* 상단 네비게이션 */
+        .sacrifice-nav {
+            border-bottom: 2px solid #444;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sacrifice-title {
+            font-family: var(--font-en);
+            font-size: 1.5rem;
+            color: #ccc;
+        }
+        .sacrifice-close {
+            background: none; border: 1px solid #444;
+            color: #666; padding: 5px 15px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .sacrifice-close:hover { border-color: red; color: red; }
+
+        /* 1. 파일 목록 화면 */
+        .file-list-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .file-folder-btn {
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            color: #aaa;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .file-folder-btn:hover {
+            background: #1a1a1a;
+            border-color: var(--accent-color);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+       
+        /* --- [수정] 폴더 이미지 컨테이너 스타일 --- */
+        .folder-img-box {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+            background-color: #0a0a0a; /* 이미지가 없을 때 배경색 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            border-radius: 4px; /* 약간의 둥근 모서리 */
+        }
+
+        .folder-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 이미지가 비율을 유지하며 꽉 차게 */
+            filter: grayscale(50%); /* 약간의 흑백 톤 추가 (분위기용) */
+            transition: filter 0.3s;
+        }
+        
+        /* 호버 시 이미지 컬러 복원 */
+        .file-folder-btn:hover .folder-img {
+            filter: grayscale(0%);
+        }
+
+        /* 이미지가 없을 때 표시할 기본 아이콘 (선택사항) */
+        .folder-img-box.no-img::after {
+            content: 'No Image';
+            color: #444;
+            font-size: 0.7rem;
+            font-family: var(--font-en);
+        }
+
+        /* 2. 상세(위키) 화면 */
+        .file-detail-view {
+            display: none; /* 기본 숨김 */
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            color: #ddd;
+        }
+        .file-detail-view.active { display: flex; }
+
+        .wiki-layout {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        
+        /* 위키 사이드바 (이미지 + 기본정보) */
+        .wiki-sidebar {
+            flex: 1;
+            max-width: 300px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 20px;
+            height: fit-content;
+        }
+        .wiki-img-box {
+            width: 100%; height: 350px;
+            border: 1px solid #444;
+            margin-bottom: 20px;
+            background: #000;
+        }
+        .wiki-info-row {
+            display: flex; justify-content: space-between;
+            border-bottom: 1px solid #222;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+        .wiki-label { color: #666; font-weight: bold; }
+
+        /* 위키 메인 컨텐츠 (평가) */
+        .wiki-content {
+            flex: 2;
+            padding-right: 20px;
+        }
+        .wiki-name-title {
+            font-size: 2.5rem;
+            border-bottom: 2px solid var(--blood-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            font-family: var(--font-kr);
+        }
+        .wiki-section-title {
+            font-size: 1.3rem;
+            color: var(--accent-color);
+            margin-top: 30px; margin-bottom: 15px;
+            border-left: 4px solid #444;
+            padding-left: 10px;
+            background: rgba(255,255,255,0.05);
+        }
+        .wiki-text {
+            line-height: 1.8;
+            color: #aaa;
+            text-align: justify;
+        }
+
+        .back-btn {
+            background: #222; border: none; color: #ccc;
+            padding: 10px 20px; cursor: pointer;
+            margin-bottom: 20px; width: fit-content;
+        }
+        .back-btn:hover { background: #333; }
+
+        @media (max-width: 768px) {
+            .wiki-layout { flex-direction: column; }
+            .wiki-sidebar { max-width: 100%; }
+        }
+
+/* --- [추가] 위키 상세 페이지 확장 스타일 --- */
+        
+        /* 1. 금기와 신념 */
+        .wiki-belief-quote {
+            font-family: var(--font-kr);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ddd;
+            border-left: 3px solid var(--blood-color);
+            padding-left: 15px;
+            margin: 20px 0 10px 0;
+            font-style: italic;
+        }
+        .wiki-belief-desc {
+            color: #888; margin-bottom: 30px; font-size: 0.95rem;
+        }
+
+        /* 2. 신문 스크랩 효과 */
+        .wiki-news-container {
+            background-color: #1a1a1a;
+            padding: 20px;
+            border: 1px dashed #444;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .news-scrap {
+            background: #e0e0d0; /* 누런 종이 색 */
+            color: #111;
+            padding: 10px;
+            font-family: var(--font-kr);
+            font-size: 0.85rem;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            transform: rotate(-1deg); /* 약간 삐뚤어지게 */
+            width: fit-content;
+            max-width: 100%;
+        }
+        .news-scrap:nth-child(even) { transform: rotate(1deg); margin-left: auto; }
+        .news-header-small {
+            font-size: 0.7rem; font-weight: bold; border-bottom: 1px solid #000; display: block; margin-bottom: 5px;
+        }
+
+        /* --- [수정] 3. 개인 소지품 (위아래 선으로 감싸는 디자인) --- */
+        .belongings-section-wrapper {
+            margin-bottom: 40px;
+        }
+
+        .belongings-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* 소지품 박스 (좌우) */
+        .belonging-item {
+            width: 80px;
+            height: 80px;
+            border: 1px solid #555;
+            background: #000;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+        .belonging-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(50%); transition: 0.3s;
+        }
+        .belonging-item:hover { border-color: var(--blood-color); }
+        .belonging-item:hover .belonging-img { filter: grayscale(0%); transform: scale(1.1); }
+
+        /* 중앙 연결부 (Flex Column으로 위-중간-아래 배치) */
+        .belonging-connector {
+            flex: 1;
+            height: 80px; /* 양옆 박스 높이와 맞춤 */
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            justify-content: center; /* 중앙 집중 */
+            gap: 8px; /* 선과 글자 사이 간격 */
+        }
+
+        /* 위/아래 가로선 스타일 */
+        .connector-line {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #555 10%, #555 90%, transparent);
+            opacity: 0.7;
+        }
+
+        /* 텍스트 영역 (선 사이 공간) */
+        .item-text-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* 텍스트 세로 중앙 정렬 */
+            width: 100%;
+            padding: 0 5px;
+            box-sizing: border-box;
+        }
+
+        /* 텍스트 상세 */
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            max-width: 48%;
+            font-family: var(--font-kr);
+        }
+        .item-info.right { text-align: right; align-items: flex-end; }
+        .item-info.left { text-align: left; align-items: flex-start; }
+
+        .item-name {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: bold;
+            margin-bottom: 3px;
+            letter-spacing: -0.5px;
+        }
+        .item-desc {
+            font-size: 0.7rem;
+            color: #888;
+            line-height: 1.2;
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
+        }
+
+        /* --- [추가] 위험도 & 활용 가치 박스 --- */
+        .status-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2열 배치 */
+            gap: 20px;
+            background: #111;
+            border: 1px solid #333;
+            padding: 20px;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .status-label {
+            color: var(--blood-color);
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            font-family: var(--font-en);
+        }
+        .status-value {
+            color: #ddd;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .status-matrix { grid-template-columns: 1fr; }
+        }
+
+        /* 4. 특성 및 종합 역량 */
+        .capability-box {
+            border: 1px solid #333;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 15px;
+            color: #aaa;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        /* 5. 마지막 요구사항 강조 */
+        .final-request-box {
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 2px dashed var(--blood-color);
+            text-align: right;
+            color: var(--blood-color);
+            font-family: var(--font-kr);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+/* --- [추가] 시스템: 관찰과 추론 섹션 스타일 --- */
+        .deduction-section {
+            padding: 40px 20px;
+            background-color: #0b0b0b;
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+            margin-bottom: 60px;
+            text-align: center;
+        }
+
+        .system-title {
+            font-family: var(--font-kr);
+            font-size: 2rem;
+            color: var(--text-main);
+            margin-bottom: 30px;
+        }
+        .system-title span {
+            font-family: var(--font-en);
+            font-size: 1.2rem;
+            color: var(--blood-color);
+            margin-left: 10px;
+            letter-spacing: 2px;
+        }
+
+        .mechanic-container {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mechanic-box {
+            flex: 1;
+            background: #111;
+            border: 1px solid #333;
+            padding: 30px;
+            position: relative;
+            transition: 0.3s;
+        }
+        .mechanic-box:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-5px);
+            background: #161616;
+        }
+
+        .mech-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #555;
+            display: block;
+        }
+
+        .mech-header {
+            font-size: 2.2rem; /* 1.4rem에서 2.2rem으로 크게 확대 */
+            font-weight: bold;
+            color: var(--blood-color);
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 10px;
+            display: inline-block;
+            font-family: var(--font-kr); /* 명조체 적용 */
+        }
+
+        .mech-desc {
+            color: #999;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        /* 관찰 예시 리스트 */
+        .clue-list {
+            text-align: left;
+            background: #050505;
+            padding: 15px;
+            border-left: 2px solid #555;
+        }
+        .clue-item {
+            color: #ccc;
+            margin-bottom: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .clue-item::before {
+            content: '- ';
+            color: var(--blood-color);
+        }
+
+        /* 추론 결과 박스 */
+        .deduction-result {
+            background-color: rgba(122, 26, 26, 0.1);
+            border: 1px solid var(--blood-color);
+            color: #d0d0d0;
+            padding: 15px;
+            font-style: italic;
+            font-family: var(--font-kr);
+        }
+
+        /* 화살표 */
+        .mechanic-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #444;
+            animation: pulseArrow 2s infinite;
+        }
+
+        @keyframes pulseArrow {
+            0% { opacity: 0.3; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+            100% { opacity: 0.3; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .mechanic-container { flex-direction: column; }
+            .mechanic-arrow { transform: rotate(90deg); margin: 10px 0; }
+            .mechanic-arrow { animation: none; } /* 모바일은 애니메이션 끔 */
+        }
+
+/* --- [추가] 3D 홀로그램 맵 스타일 --- */
+        .map-section-container {
+            margin-bottom: 80px;
+            padding: 40px 0;
+            background: radial-gradient(circle at center, #1a0505 0%, #000 70%);
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+            overflow: hidden;
+            perspective: 1000px; /* 3D 원근감 */
+        }
+
+        .map-title {
+            text-align: center;
+            font-family: var(--font-en);
+            color: var(--blood-color);
+            margin-bottom: 40px;
+            text-shadow: 0 0 10px var(--blood-color);
+            letter-spacing: 3px;
+        }
+
+        /* 3D 스테이지 */
+        .holo-stage {
+            width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(60deg) rotateZ(-45deg); /* 아이소메트릭 뷰 */
+            transition: transform 0.5s;
+        }
+
+        /* 도시 전체 그리드 바닥 */
+        .holo-grid-base {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            top: -100px; left: -100px;
+            background-image: 
+                linear-gradient(rgba(122, 26, 26, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(122, 26, 26, 0.3) 1px, transparent 1px);
+            background-size: 40px 40px;
+            transform: translateZ(-20px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* 구역 블록 공통 스타일 */
+        .district-block {
+            position: absolute;
+            background: rgba(122, 26, 26, 0.1);
+            border: 1px solid var(--blood-color);
+            box-shadow: 0 0 15px rgba(122, 26, 26, 0.2) inset;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--font-en);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform-style: preserve-3d;
+        }
+
+        /* 블록 호버 효과 (위로 떠오름 + 밝아짐) */
+        .district-block:hover {
+            background: rgba(122, 26, 26, 0.4);
+            box-shadow: 0 0 30px var(--blood-color);
+            transform: translateZ(20px);
+            z-index: 10;
+        }
+
+        /* 라벨 (항상 정면을 보게 역회전 시킴 등은 생략하고 단순 텍스트로) */
+        .d-label {
+            transform: rotateZ(45deg) rotateX(-60deg) translateZ(20px); /* 텍스트가 서 보이게 */
+            text-shadow: 0 0 5px #000;
+            pointer-events: none;
+            font-weight: bold;
+        }
+
+        /* --- 구역별 위치 및 크기 (맵 배치도) --- */
+        
+        /* 1. 중앙 (Center) */
+        .d-center {
+            width: 140px; height: 140px;
+            top: 130px; left: 130px;
+            z-index: 5;
+            background: rgba(200, 50, 50, 0.15); /* 중앙은 좀 더 진하게 */
+        }
+        .d-center:hover { transform: translateZ(30px); }
+
+        /* 2. 북부 (North) - 화면상 오른쪽 위 */
+        .d-north {
+            width: 300px; height: 100px;
+            top: 10px; left: 50px;
+        }
+
+        /* 3. 남부 (South) - 화면상 왼쪽 아래 */
+        .d-south {
+            width: 300px; height: 100px;
+            bottom: 10px; left: 50px;
+        }
+
+        /* 4. 서부 (West) - 화면상 왼쪽 위 */
+        .d-west {
+            width: 100px; height: 160px;
+            top: 120px; left: 10px;
+        }
+
+        /* 5. 동부 (East) - 화면상 오른쪽 아래 */
+        .d-east {
+            width: 100px; height: 160px;
+            top: 120px; right: 10px;
+        }
+
+        /* 스캔라인 (홀로그램 느낌) */
+        .holo-scan {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(transparent, rgba(255, 0, 0, 0.2), transparent);
+            opacity: 0.5;
+            animation: scanMap 3s linear infinite;
+            pointer-events: none;
+            transform: translateZ(50px);
+        }
+
+        @keyframes scanMap {
+            0% { transform: translateY(-100%) rotateZ(45deg); }
+            100% { transform: translateY(400%) rotateZ(45deg); }
+        }
+
+        /* 모바일 대응 (축소) */
+        @media (max-width: 768px) {
+            .holo-stage { transform: scale(0.7) rotateX(60deg) rotateZ(-45deg); }
+        }
+
+/* =========================================
+           [추가된 코드] 인트로 및 잠금 화면 스타일
+           ========================================= */
+        
+        /* 1. 메인 화면 감싸는 래퍼 (처음엔 숨김) */
+        #main-wrapper {
+            display: none; 
+            opacity: 0;
+            transition: opacity 2s ease-in;
+        }
+        #main-wrapper.unlocked {
+            display: block;
+            opacity: 1;
+        }
+
+        /* 2. 인트로 오버레이 (심해 배경) */
+        .intro-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: opacity 1.5s ease-out, visibility 1.5s;
+        }
+        .intro-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        /* 3. 룬 문자 애니메이션 */
+        .floating-rune {
+            position: absolute;
+            color: #444;
+            font-size: 1.5rem;
+            opacity: 0;
+            user-select: none;
+            text-shadow: 0 0 10px rgba(122, 26, 26, 0.3);
+            animation: runeFloat linear forwards;
+        }
+        @keyframes runeFloat {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg) scale(0.8); opacity: 0; }
+            10% { opacity: 0.5; }
+            50% { transform: translateY(50vh) translateX(20px) rotate(180deg) scale(1); opacity: 0.8; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) translateX(-20px) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* 4. 불길한 청록색 빛 (단일, 느린 빈도) */
+        .distant-light {
+            position: absolute;
+            width: 5px; 
+            height: 5px;
+            background-color: #00ffcc;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #00ffcc, 0 0 30px #008b8b;
+            opacity: 0;
+            animation: flickerLight linear forwards;
+            pointer-events: none;
+        }
+        @keyframes flickerLight {
+            0% { opacity: 0; transform: scale(0.5); }
+            20% { opacity: 0.8; transform: scale(1.2); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+            80% { opacity: 0.9; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(0.1); }
+        }
+
+        /* 5. 가라앉는 텍스트 */
+        .sinking-text {
+            color: #ddd;
+            font-family: var(--font-en);
+            font-size: 1.2rem;
+            letter-spacing: 8px;
+            text-align: center;
+            animation: sinkText 14s ease-in-out forwards;
+            opacity: 0;
+            z-index: 10;
+        }
+        @keyframes sinkText {
+            0% { opacity: 0; transform: translateY(30px) scale(0.9); filter: blur(4px); }
+            10% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+            80% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.1); filter: blur(10px); }
+        }
+
+        /* 6. 잠금 화면 */
+        .lock-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 11;
+            animation: fadeInLock 2s ease-in;
+        }
+        @keyframes fadeInLock { from { opacity: 0; } to { opacity: 1; } }
+
+        .rune-circle {
+            width: 140px; height: 140px;
+            border: 1px solid #222;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            position: relative;
+        }
+        .rune-circle::before {
+            content: "";
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 1px dashed var(--blood-color);
+            border-top-color: transparent;
+            animation: spinRune 8s infinite linear;
+            opacity: 0.8;
+        }
+        .rune-icon {
+            font-size: 4rem;
+            color: var(--blood-color);
+            text-shadow: 0 0 15px var(--blood-color);
+            animation: pulseRune 3s infinite alternate;
+        }
+        @keyframes spinRune { 100% { transform: rotate(360deg); } }
+        @keyframes pulseRune { from { opacity: 0.6; } to { opacity: 1; } }
+
+        /* 7. 입력창 */
+        .secret-input-box { width: 300px; text-align: center; position: relative; }
+        .secret-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #333;
+            color: #fff;
+            font-family: var(--font-en);
+            font-size: 1.5rem;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            outline: none;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .secret-input:focus { border-bottom-color: var(--blood-color); }
+        .secret-input::placeholder { color: #333; font-size: 2rem; letter-spacing: -3px; }
+
+        .access-denied {
+            animation: shake-screen 0.4s ease-in-out;
+            border-bottom-color: red !important;
+            color: red !important;
+        }
+
+/* --- [수정] 이미지 선명하게 보이기 (필터 제거) --- */
+.district-img-box img,
+.hotel-main-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 비율 유지하며 꽉 채우기 */
+    filter: none !important; /* 흑백/노이즈 효과 강제 제거 */
+    opacity: 1 !important;
+    border-radius: 2px;
+}
+
+/* 이미지 박스 자체의 배경이나 테두리 정리 */
+.district-img-box, .hotel-main-img {
+    background: transparent !important;
+    border: none !important;
+}
+.district-img-box::after, .hotel-main-img::after {
+    display: none !important; /* 'NO IMAGE' 글자 숨김 */
+}
+    </style>
+</head>
+<body>
+<div class="intro-overlay" id="introLayer">
+        <div id="runeContainer"></div>
+        <div id="lightContainer"></div> <div class="sinking-text" id="introText">
+            INTO THE ABYSS OF ADAM
+        </div>
+
+        <div class="lock-container" id="lockScreen">
+            <div class="rune-circle">
+                <span class="rune-icon">ᛟ</span> 
+            </div>
+            
+            <div class="secret-input-box">
+                <input type="text" id="gateKey" class="secret-input" placeholder="᛫᛫᛫᛫᛫" autocomplete="off">
+            </div>
+            <p style="color:#444; font-size: 0.8rem; margin-top: 20px; font-family: monospace;">
+                <span id="statusText">AWAITING INPUT</span>
+            </p>
+        </div>
+    </div>
+
+    <div id="main-wrapper">
+
+    <audio id="bgTheme" loop>
+        <source src="" type="audio/mpeg"> 
+    </audio>
+
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <div class="shatter-overlay" id="shatterOverlay"></div>
+
+    <div class="container">
+        <header class="fade-in">
+            <h1>APPLE</h1>
+            <p class="subtitle">The Invitation from Adam City, 1914</p>
+        </header>
+
+        <section class="letter-section fade-in">
+            <div id="typewriter"></div>
+            <span class="cursor"></span>
+        </section>
+        
+        <div class="section-divider"></div>
+
+        <section class="newspaper-section fade-in">
+            <div class="news-header">
+                <span class="news-title">The Adam Chronicle</span>
+                <span class="news-date">October 14th, 1914</span>
+            </div>
+            <div class="news-content">
+                <p><span class="news-highlight">A</span>dam City's fog thickens as the missing persons count surpasses one hundred. Local authorities remain silent regarding the mysterious disappearances that have plagued the docklands since early September.</p>
+                <p>"It's not just the fog," says a local fisherman who wished to remain anonymous. "Something moves within it. Shadows that don't belong to any man or beast." The police chief has dismissed these claims as mass hysteria caused by the recent industrial fumes.</p>
+                <p>Meanwhile, the Lawton Hotel prepares to host a gathering of specialized individuals invited by the Mayor. Critics argue this is a desperate measure to control the situation that has clearly spiraled out of law enforcement's grasp.</p>
+            </div>
+        </section>
+
+        <section class="worldview-section fade-in">
+            <h3 class="worldview-title">About Adam City</h3>
+            <div class="worldview-text">
+                <p><strong>고립된 도시:</strong> 1914년, 거대한 안개 장벽에 의해 외부와 철저히 단절된 해상 도시입니다. 증기 기관과 초기 전기 문명이 기이하게 뒤틀려 발전했습니다.</p>
+                <br>
+                <p><strong>안개 (The Fog):</strong> 단순한 기상 현상이 아닙니다. 안개 속에서는 전파가 차단되고, 나침반이 돌며, 사람의 정신을 갉아먹는 환청이 들려옵니다. 시민들은 해가 지면 절대 문밖을 나서지 않습니다.</p>
+            </div>
+        </section>
+
+        <section class="sanity-section fade-in">
+            <h3 class="sanity-title">Delirium & Madness</h3>
+            <p style="text-align: center; color: #aaa; margin-bottom: 20px;">
+                "정신을 놓지 마십시오. 안개가 당신의 뇌를 파고들 것입니다."
+            </p>
+
+            <div class="sanity-meter-box">
+                <div class="sanity-marker" style="left: 30%; border-color: red;" data-label="30"></div>
+                <div class="sanity-marker" style="left: 60%;" data-label="60"></div>
+                <div class="sanity-bar"></div>
+            </div>
+
+            <div class="sanity-desc-grid">
+                <div class="sanity-stage">
+                    <h4>기본 상태 (Sanity 100 ~ 61)</h4>
+                    <p>안정적입니다. 하지만 안개 속에 오래 머물거나 충격적인 장면을 목격하면 수치는 서서히 감소합니다.</p>
+                </div>
+                <div class="sanity-stage">
+                    <h4>1차 임계점 (Sanity 60 ~ 31)</h4>
+                    <p>정신적 방어기제가 무너집니다. 환청과 환각이 시작되며, 특정 대상에 대한 <span class="warning-text">집착증(Obsession)</span>이나 <span class="warning-text">공포증(Phobia)</span>이 발현될 수 있습니다.</p>
+                </div>
+                <div class="sanity-stage" style="grid-column: 1 / -1; margin-top: 10px;">
+                    <h4 style="color: var(--blood-color);">2차 임계점 (Sanity 30 ~ 0) - 위험(Critical)</h4>
+                    <p>완전한 <span class="warning-text">광기(Madness)</span>의 영역입니다. 현실과 망상의 경계가 사라집니다. 통제 불가능한 폭력성을 보이거나, 자아를 상실하고 '괴물'과 다름없는 상태가 됩니다. 회복이 불가능할 수 있습니다.</p>
+                </div>
+            </div>
+        </section>
+
+<div class="map-section-container fade-in">
+            <h3 class="map-title">CITY TOPOGRAPHY [HOLOGRAM]</h3>
+            
+            <div class="holo-stage">
+                <div class="holo-grid-base"></div>
+                
+                <div class="holo-scan"></div>
+
+                <div class="district-block d-north" onclick="goToDistrict('north')">
+                    <span class="d-label">NORTH</span>
+                </div>
+
+                <div class="district-block d-west" onclick="goToDistrict('west')">
+                    <span class="d-label">WEST</span>
+                </div>
+
+                <div class="district-block d-center" onclick="goToDistrict('center')">
+                    <span class="d-label" style="color:#fff;">CENTER</span>
+                </div>
+
+                <div class="district-block d-east" onclick="goToDistrict('east')">
+                    <span class="d-label">EAST</span>
+                </div>
+
+                <div class="district-block d-south" onclick="goToDistrict('south')">
+                    <span class="d-label">SOUTH</span>
+                </div>
+            </div>
+            
+            <p style="text-align: center; color: #555; margin-top: 50px; font-size: 0.8rem;">
+                * Click on a sector to access detailed information.
+            </p>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <section class="districts-section fade-in">
+            <h2>The Districts</h2>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openDistrict('center')">중앙 (Center)</button>
+                <button class="tab-btn" onclick="openDistrict('east')">동부 (East)</button>
+                <button class="tab-btn" onclick="openDistrict('west')">서부 (West)</button>
+                <button class="tab-btn" onclick="openDistrict('south')">남부 (South)</button>
+                <button class="tab-btn" onclick="openDistrict('north')">북부 (North)</button>
+            </div>
+
+            <div id="center" class="tab-content active">
+    <div class="district-img-box">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/M.webp" alt="Center District">
+    </div>
+    <h3 class="tab-title">중앙 (Central Adam)</h3>
+    <p>애덤 시의 심장부. 시청과 주요 공공 시설이 밀집해 있는 번화가입니다.</p>
+    <br>
+    <ul>
+        <li>- <strong>로턴 스트리트 (Lawton St):</strong> 해결사들이 머물게 될 <span class="keyword">로턴 호텔(Lawton Hotel)</span>이 위치함.</li>
+        <li>- <strong>주요 시설:</strong> 시청, 경찰서, 소방서, 기차역.</li>
+        <li>- 가장 정돈되어 있으나, 밤이면 묘한 정적이 흐르는 곳.</li>
+    </ul>
+</div>
+
+<div id="east" class="tab-content">
+    <div class="district-img-box">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/E.webp" alt="East District">
+    </div>
+    <h3 class="tab-title">동부 (East Adam)</h3>
+    <p>기이한 분위기의 항구 도시. 외곽에는 악취와 이끼가 가득합니다.</p>
+    <br>
+    <ul>
+        <li>- <strong>주요 거리:</strong> 이스트 애덤 스트리트, 플리트 스트리트.</li>
+        <li>- <strong>특이점:</strong> 도시 설립 이전부터 존재한 '오래된 등대'.</li>
+        <li>- <strong>최근 사건:</strong> 의문의 <span class="keyword">연쇄 살인 사건</span> 발생.</li>
+    </ul>
+</div>
+
+<div id="west" class="tab-content">
+    <div class="district-img-box">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/W.webp" alt="West District">
+    </div>
+    <h3 class="tab-title">서부 (West Adam)</h3>
+    <p>하얀색 건물들이 늘어선 고풍스러운 부촌. 겉보기엔 가장 평화롭고 세련된 곳입니다.</p>
+    <br>
+    <ul>
+        <li>- <strong>시설:</strong> 고급 쇼핑 시설, 대학, 병원, 교회.</li>
+        <li>- <strong>최근 사건:</strong> <span class="keyword">사이비 종교</span>의 포교 활동. 백의를 입은 사제들 출몰.</li>
+    </ul>
+</div>
+
+<div id="south" class="tab-content">
+    <div class="district-img-box">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/S.webp" alt="South District">
+    </div>
+    <h3 class="tab-title">남부 (South Adam)</h3>
+    <p>미로처럼 얽힌 붉은 벽돌의 공장 단지. 매연과 소음이 끊이지 않는 곳입니다.</p>
+    <br>
+    <ul>
+        <li>- <strong>분위기:</strong> 산업혁명 초기의 혼란스러움과 빈민가.</li>
+        <li>- <strong>구조:</strong> 외부인은 길을 잃기 쉬운 복잡한 미로 구조.</li>
+        <li>- <strong>최근 사건:</strong> 노동자와 거주민들의 <span class="keyword">실종 사건</span>.</li>
+    </ul>
+</div>
+
+<div id="north" class="tab-content">
+    <div class="district-img-box">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/N.webp" alt="North District">
+    </div>
+    <h3 class="tab-title">북부 (North Adam)</h3>
+    <p>낮에는 평범해 보이지만, 밤이 되면 본색을 드러내는 무법지대이자 환락의 도시.</p>
+    <br>
+    <ul>
+        <li>- <strong>시설:</strong> 도박장, 카지노, 암시장, 만물상(텔러).</li>
+        <li>- <strong>세력:</strong> 마피아 조직과 갱단이 지배함.</li>
+        <li>- <strong>정보:</strong> 바(Bar) '올드 아담'에서 은밀한 정보가 거래됨.</li>
+    </ul>
+</div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="lawton-section fade-in">
+    <h2 class="lawton-title">로턴 호텔 <span>(Lawton Hotel)</span></h2>
+    
+    <div class="hotel-main-img">
+        <img src="https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/ld/H.webp" alt="Lawton Hotel">
+    </div>
+
+    <div class="hotel-intro-text">
+        <p>
+            1890년 준공. 애덤 시의 역사와 함께해 온 유서 깊은 호텔입니다.<br>
+            빅토리아 양식의 고풍스러운 외관과 삐걱거리는 마호가니 바닥은<br>
+            지난 세월의 흔적을 고스란히 간직하고 있습니다.
+        </p>
+        <br>
+        <p>
+            이곳은 시장의 초대를 받은 여러분을 위한 유일한 안식처이자,<br>
+            어떤 세력의 간섭도 받지 않는 <strong>'중립 지대'</strong>입니다.<br>
+            로비에서는 언제나 따뜻한 커피와 시가 향기를 맡으실 수 있습니다.
+        </p>
+    </div>
+
+            <div class="hotel-features">
+                <div class="feature-item">
+                    <span class="feature-icon">Est. 1890</span>
+                    <span class="feature-desc">Historic Building</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">Neutral Zone</span>
+                    <span class="feature-desc">No Violence Inside</span>
+                </div>
+                <div class="feature-item">
+                    <span class="feature-icon">Concierge</span>
+                    <span class="feature-desc">24h Service</span>
+                </div>
+            </div>
+        </section>
+
+<section class="deduction-section fade-in">
+            <h2 class="system-title">SYSTEM <span>Observation & Deduction</span></h2>
+            
+            <div class="mechanic-container">
+                <div class="mechanic-box">
+                    <h3 class="mech-header">「 관찰 」</h3>
+                    <p class="mech-desc">
+                        오감을 통한 대상의 단편적 정보 감지.<br>
+                        (시각, 청각, 후각, 미각, 촉각)
+                    </p>
+                    <div class="clue-list">
+                        <div class="clue-item">'갈라진 입술'</div>
+                        <div class="clue-item">'빈 약봉투'</div>
+                        <div class="clue-item">'떨리는 근육'</div>
+                        <div class="clue-item">'식은 땀'</div>
+                    </div>
+                </div>
+
+                <div class="mechanic-arrow">▶</div>
+
+                <div class="mechanic-box">
+                    <h3 class="mech-header">「 추론 」</h3>
+                    <p class="mech-desc">
+                        관찰된 정보를 바탕으로<br>
+                        대상의 숨겨진 상태와 정보를 서술.
+                    </p>
+                    <div class="deduction-result">
+                        "대상은 현재 극도의 불안 상태이며,<br>
+                        약물 금단 증상을 겪고 있음이 확실하다."
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="section-divider"></div>
+        <div class="mid-phrase-container fade-in" onclick="triggerTotalDestruction()">
+            <p class="mid-phrase glitch-target">썩은 사과도 사과다.</p>
+        </div>
+        <div class="section-divider"></div>
+
+        <section class="hotel-section fade-in">
+            <h2>Guest Registry</h2>
+            <p class="hotel-desc">Lawton Hotel - Fixers List<br><strong>2 Rooms per Floor</strong></p>
+            
+            <div class="guest-grid" id="guest-list">
+                </div>
+        </section>
+
+<div class="section-divider"></div>
+
+        <section class="input-section fade-in">
+            <h3 class="input-title">Send Transmission to Mayor</h3>
+            <div class="terminal-box">
+                <textarea class="terminal-input" id="userMessage" placeholder="이곳에 시장에게 보낼 답신이나 암호를 입력하십시오..."></textarea>
+                <button class="transmit-btn" onclick="sendTransmission()">Transmit</button>
+                <div class="response-msg" id="transmissionResponse"></div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 1914 Adam City Administration. All rights reserved.</p>
+            <p>Beware of the fog.</p>
+            <div class="fog-container">
+                <div class="fog-img"></div>
+                <div class="fog-img-2"></div>
+            </div>
+        </footer>
+
+        <div class="modal-overlay" id="cardModal" onclick="closeModal(event)">
+            <div class="business-card" onclick="event.stopPropagation()">
+                <span class="close-btn" onclick="closeModalDirect()">×</span>
+                
+                <div class="card-info-side">
+                    <div class="card-header">
+                        <div class="card-name" id="modalName">Name</div>
+                        <div class="card-role" id="modalRole">Role</div>
+                    </div>
+                    
+                    <div class="card-body-row">
+                        <span class="card-label">AGE</span>
+                        <span class="card-value" id="modalAge">20s</span>
+                    </div>
+                    <div class="card-body-row">
+                        <span class="card-label">GENDER</span>
+                        <span class="card-value" id="modalGender">Female</span>
+                    </div>
+                    <div class="card-body-row">
+                        <span class="card-label">SPECIALTY</span>
+                        <span class="card-value" id="modalSpecialty">Unknown</span>
+                    </div>
+                    <div class="card-body-row">
+                        <span class="card-label">NOTES</span>
+                        <span class="card-value" id="modalDistinct">No specific records.</span>
+                    </div>
+                    <div class="card-body-row" style="margin-top: 15px;">
+                        <span class="card-label" style="color:var(--blood-color)">REQUEST</span>
+                        <span class="card-value redacted" id="modalRequest">This information is classified</span>
+                    </div>
+                </div>
+
+                <div class="card-img-side">
+                    <div class="img-placeholder card-portrait-box" id="modalImgContainer"></div>
+                    <div class="card-room-number" id="modalRoom">RM.000</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div> <script>
+        // ==========================================
+        // 1. 기본 데이터 및 설정
+        // ==========================================
+        
+        // 타자기 텍스트
+        const letterText = `친애하는 해결사 여러분.
+
+저는 애덤 시(Adam City)의 시장, 이안입니다.
+1914년, 우리의 도시는 기이한 병에 걸렸습니다.
+
+항구의 어업과 산업, 관광으로 번영했던 이 도시는
+1909년부터 시작된 알 수 없는 살인, 실종, 그리고 '현상'들로 인해
+천천히 죽어가고 있습니다.
+
+여러분은 각자의 분야에서 최고의 실력을 가진 분들입니다.
+로턴 호텔에 여장을 푸시고, 부디 이 도시를 구원해주십시오.
+
+보수는 섭섭지 않게 챙겨드리겠습니다.
+행운을 빕니다.
+
+- Adam City Mayor, Ian.`;
+
+        // 메인 해결사 데이터
+        const guests = [
+            { room: "702", name: "이브", role: "화가", age: "19", gender: "Female", specialty: "예술", distinct: "항상 손에 물감이 묻어있음. 백색 머리칼.", request: "개인전시회를 개최 및 명화 요구.", desc: "여성 / 백색 머리 & 붉은 눈 / 유명 화가", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/F/25.webp", fileImg: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/logo/eve.png" },
+            { room: "701", name: "스텔라", role: "경찰", age: "21", gender: "Female", specialty: "수사 및 사격", distinct: "제복 착용. 오드아이의 시선이 불안함.", request: "계급 특진 및 훈장, 서장으로 취임.", desc: "여성 / 금발 / 오드아이 / 제복 착용", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/D/25.webp", fileImg: "" },
+            { room: "601", name: "루트", role: "물리학 교수", age: "22", gender: "Female", specialty: "공간 물리학", distinct: "신임 교수. 푸른 머리카락을 묶고 있음.", request: "애덤 대학의 무수한 자료 열람권.", desc: "여성 / 푸른 머리 / 오드아이 / 신임 교수", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/C/25.webp", fileImg: "" },
+            { room: "402", name: "왓슨", role: "조수", age: "20", gender: "Female", specialty: "응급 처치", distinct: "시안의 조수. 자색 눈동자가 특징.", request: "시안이 원하는대로만 부탁해요", desc: "여성 / 자색 머리 & 눈 / 시안의 조수", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/B/25.webp", fileImg: "" },
+            { room: "401", name: "시안", role: "탐정", age: "20", gender: "Female", specialty: "추리 및 심문", distinct: "영국 출신 명탐정. 흑발 금안.", request: "수사 및 추리 과정에서의 면책권.", desc: "여성 / 흑발 / 금안 / 영국 명탐정", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/A/25.webp", fileImg: "" },
+            { room: "302", name: "하이디", role: "기자", age: "20", gender: "Female", specialty: "정보 수집", distinct: "뉴욕 타임즈 기자. 주황색 머리.", request: "애덤 시 사건의 보도권 독점.", desc: "여성 / 주황 머리 / 청안 / 뉴욕 기자", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/E/25.webp", fileImg: "" },
+            { room: "301", name: "루나", role: "톱스타", age: "20", gender: "Female", specialty: "연기 및 가창", distinct: "월드 스타. 백금발의 화려한 외모.", request: "그냥, 편히 쉴 수만 있으면 좋아요.", desc: "여성 / 백금발 / 자색 눈 / 월드 스타", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/K/25.webp", fileImg: "" },
+            { room: "202", name: "르네", role: "정신과 의사", age: "23", gender: "Female", specialty: "심리 상담", distinct: "차분한 회색 머리. ", request: "고급 양주 무한 제공.", desc: "여성 / 회색 머리 / 자색 눈", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/I/25.webp", fileImg: "" },
+            { room: "201", name: "노아", role: "기술자", age: "19", gender: "Female", specialty: "기계 수리", distinct: "멜빵바지. 기름 냄새.", request: "개인 연구 실적에 등제.", desc: "여성 / 푸른 머리 & 눈 / 후드티", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/G/25.webp", fileImg: "" },
+            { room: "102", name: "카론", role: "고고학자", age: "22", gender: "Female", specialty: "고대어 해독", distinct: "백발의 젊은 고고학자.", request: "애덤 시의 고대 유물들의 소유권.", desc: "여성 / 백발 / 청안 / 유명 학자", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/H/25.webp", fileImg: "" },
+            { room: "101", name: "사프카", role: "첩보원", age: "21", gender: "Female", specialty: "암호 해독", distinct: "미국 정보국 소속. 갈색 머리.", request: "없음.", desc: "여성 / 갈색 머리 / 녹안 / 미국 요원", img: "https://raw.githubusercontent.com/palette-cyan/apple/refs/heads/main/J/25.webp", fileImg: "" },
+            { room: "???", name: "{{user}}", role: "플레이어", age: "Unknown", gender: "Unknown", specialty: "Unknown", distinct: "기록 없음. 신원 미상.", request: "재미있게 즐겨주세요.", desc: "기록 없음 / 신원 미상", isUser: true, img: "", fileImg: "" }
+        ];
+
+        // SACRIFICE 상세 데이터베이스
+        const sacrificeDatabase = {
+            "이브": { bio: "애덤 시 외부에서 초청된 유명 화가...", beliefQuote: "\"붉은색이 아니면, 그것은 죽은 그림이야.\"", beliefDesc: "채색에 대한 강박.", newsClippings: ["1912.05.12 - 전시회 도중 실신.", "1913.11.02 - 최근 급부상하고 있는 젊은 화가의 신작."], itemImg1: "", itemName1: "낡은 노트", itemDesc1: "끝이 전부 다 닳아버린 낡은 노트.", itemImg2: "", itemName2: "이브의 만년필", itemDesc2: "'Eve'라는 음각이 새겨진 고급스러운 만년필. 꽤나 오래된 종류이지만, 깨끗하게 보존되어있다.", eval: "정서불안. 위험지역 접근 성향.", traits: "<strong>[직관적 통찰]</strong>, <strong>[정신 감응]</strong>", risk: "B+", utility: "안개 속 형상 구체화." },
+            "Guest 9": { bio: "외부 파견 경관 추정...", beliefQuote: "\"법은 죽었지만, 죄는 남는다.\"", beliefDesc: "사법 불신, 자력 구제.", newsClippings: ["1910.08.XX - 마피아 단신 습격.", "1911.01.15 - 수사팀 해체."], itemImg1: "", itemName1: "훼손된 배지", itemDesc1: "소속 불명 배지.", itemImg2: "", itemName2: "마지막 탄환", itemDesc2: "이름이 새겨진 탄환.", eval: "편집증 증세. 통제 불능.", traits: "<strong>[사격술]</strong>, <strong>[심문]</strong>", risk: "A", utility: "전투력 최상." },
+            "루트": { bio: "젊은 천재 물리학자...", beliefQuote: "\"관측되지 않는 공포는 없다.\"", beliefDesc: "과학적 규명에 대한 집착.", newsClippings: ["1913.03.10 - 연구실 폭발.", "1913.04.01 - 논문 파문."], itemImg1: "", itemName1: "고장 난 나침반", itemDesc1: "방향을 못 잡는 나침반.", itemImg2: "", itemName2: "연구 노트", itemDesc2: "알 수 없는 수식.", eval: "호기심이 생존 본능을 앞섬.", traits: "<strong>[공학적 분석]</strong>, <strong>[냉철함]</strong>", risk: "C", utility: "안개 중화 장치 개발." },
+            "왓슨": { bio: "시안 탐정의 조수...", beliefQuote: "\"그녀는 나의 눈이고, 나는 그녀의 손이다.\"", beliefDesc: "시안에 대한 맹목적 헌신.", newsClippings: ["1908.XX.XX - 의대 수석 졸업.", "1909.12.25 - '천사' 소문."], itemImg1: "", itemName1: "수술용 메스", itemDesc1: "날카로운 메스.", itemImg2: "", itemName2: "회중시계", itemDesc2: "시안과 같은 시계.", eval: "시안 의존도 높음.", traits: "<strong>[응급 처치]</strong>, <strong>[CQC]</strong>", risk: "B-", utility: "의료 및 호위." },
+            "시안": { bio: "영국 명탐정...", beliefQuote: "\"모든 퍼즐에는 반드시 조각이 있다.\"", beliefDesc: "진실에 대한 강박.", newsClippings: ["1912.10.04 - 살인마 검거.", "1914.01.01 - 요양차 출국."], itemImg1: "", itemName1: "파이프 담배", itemDesc1: "오래된 파이프.", itemImg2: "", itemName2: "진통제 병", itemDesc2: "내용물이 거의 없음.", eval: "논리가 통하지 않는 곳에서의 스트레스.", traits: "<strong>[초추리]</strong>, <strong>[약물 의존]</strong>", risk: "C+", utility: "사건 인과관계 파악." },
+            "하이디": { bio: "뉴욕 타임즈 기자...", beliefQuote: "\"펜은 칼보다 강하다.\"", beliefDesc: "진실 보도 제일주의.", newsClippings: ["1913.06.15 - 스캔들 폭로.", "1914.02.XX - 출입 금지."], itemImg1: "", itemName1: "소형 카메라", itemDesc1: "금이 간 렌즈.", itemImg2: "", itemName2: "속기 수첩", itemDesc2: "암호 같은 필기.", eval: "입이 가벼움. 통제 불능.", traits: "<strong>[잠입]</strong>, <strong>[속기]</strong>", risk: "B", utility: "비밀 정보 확보." },
+            "루나": { bio: "세기의 여배우...", beliefQuote: "\"영원히 나만 바라봐요.\"", beliefDesc: "관심 결핍.", newsClippings: ["1913.12.31 - 영화 흥행.", "1914.03.10 - 스토커 위협."], itemImg1: "", itemName1: "진주 목걸이", itemDesc1: "가짜가 섞인 목걸이.", itemImg2: "", itemName2: "팬레터 뭉치", itemDesc2: "섬뜩한 내용.", eval: "대중 선동 능력.", traits: "<strong>[매혹]</strong>, <strong>[연기]</strong>", risk: "A", utility: "시민 선동." },
+            "르네": { bio: "정신과 전문의...", beliefQuote: "\"마음은 뇌의 감옥일 뿐.\"", beliefDesc: "감정의 화학적 해석.", newsClippings: ["1910.XX.XX - 환자 탈주.", "1911.XX.XX - 면허 정지 기각."], itemImg1: "", itemName1: "최면용 추", itemDesc1: "은제 펜듈럼.", itemImg2: "", itemName2: "진료 기록부", itemDesc2: "약점 기록 장부.", eval: "사디즘 성향 의심.", traits: "<strong>[심리 분석]</strong>, <strong>[최면]</strong>", risk: "S", utility: "정신력 관리." },
+            "노아": { bio: "어린 기술자...", beliefQuote: "\"기계는 거짓말 안 해요.\"", beliefDesc: "기계 신뢰.", newsClippings: ["1912.09.09 - 학위 거부.", "1914.05.05 - 크레인 수리."], itemImg1: "", itemName1: "만능 렌치", itemDesc1: "손때 묻은 공구.", itemImg2: "", itemName2: "설계도", itemDesc2: "지하 배관 청사진.", eval: "기술적 가치 높음.", traits: "<strong>[공학]</strong>, <strong>[해킹]</strong>", risk: "D", utility: "도시 유지 보수." },
+            "카론": { bio: "고고학계 거장...", beliefQuote: "\"과거를 잊은 자에게 미래는 없다.\"", beliefDesc: "금지된 지식 탐구.", newsClippings: ["1899.XX.XX - 발굴팀 실종.", "1905.XX.XX - 학계 추방."], itemImg1: "", itemName1: "지팡이", itemDesc1: "칼날 숨겨진 지팡이.", itemImg2: "", itemName2: "고대 석판", itemDesc2: "해독 불가 문자.", eval: "도시 기원에 접근.", traits: "<strong>[고대어 해독]</strong>, <strong>[생존 본능]</strong>", risk: "A", utility: "유적 진입." },
+            "사프카": { bio: "정체불명 첩보원...", beliefQuote: "\"충성은 비싼 곳에 바친다.\"", beliefDesc: "철저한 이기주의.", newsClippings: ["1913.XX.XX - 기밀 유출.", "1914.XX.XX - 인터폴 수배."], itemImg1: "", itemName1: "위조 여권", itemDesc1: "다양한 국적.", itemImg2: "", itemName2: "독극물 앰플", itemDesc2: "용도 불명.", eval: "언제든 배신 가능.", traits: "<strong>[변장]</strong>, <strong>[암호학]</strong>", risk: "B+", utility: "비밀 통신." },
+            "{{user}}": { bio: "기록 말소...", beliefQuote: "\"......\"", beliefDesc: "데이터 없음.", newsClippings: ["NO RECORD.", "SYSTEM ERROR."], itemImg1: "", itemName1: "초대장", itemDesc1: "피 묻은 초대장.", itemImg2: "", itemName2: "빈 열쇠", itemDesc2: "녹슨 열쇠.", eval: "모든 예측의 변수.", traits: "<strong>[정신력 저항]</strong>, <strong>[선택]</strong>", risk: "UNKNOWN", utility: "UNKNOWN" }
+        };
+
+        // ==========================================
+        // 2. 초기화 및 기본 기능 (Basic Functions)
+        // ==========================================
+        
+        let i = 0;
+        const typeWriterElement = document.getElementById('typewriter');
+
+        function typeWriter() {
+            if (i < letterText.length) {
+                typeWriterElement.innerHTML += letterText.charAt(i) === '\n' ? '<br>' : letterText.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50); 
+            } else {
+                document.querySelector('.cursor').style.display = 'none';
+            }
+        }
+
+        function openDistrict(districtName) {
+            const contents = document.getElementsByClassName('tab-content');
+            const buttons = document.getElementsByClassName('tab-btn');
+            for (let content of contents) content.classList.remove('active');
+            for (let btn of buttons) btn.classList.remove('active');
+            document.getElementById(districtName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function renderGuests() {
+            const guestListContainer = document.getElementById('guest-list');
+            guestListContainer.innerHTML = "";
+            guests.forEach((guest, index) => {
+                const card = document.createElement('div');
+                card.className = guest.isUser ? 'guest-card user-card' : 'guest-card';
+                card.style.cursor = 'pointer'; 
+                card.onclick = () => openModal(index); 
+
+                const imgHTML = (guest.img && guest.img.trim() !== '') ? `<img src="${guest.img}" alt="${guest.name}">` : ``; 
+
+                card.innerHTML = `
+                    <div class="img-placeholder card-img-box">${imgHTML}</div>
+                    <div class="room-number">${guest.room}</div>
+                    <div class="guest-info">
+                        <div class="guest-name">${guest.name}</div>
+                        <span class="guest-role">${guest.role}</span>
+                        <div class="guest-details"><span>${guest.desc}</span></div>
+                    </div>
+                `;
+                guestListContainer.appendChild(card);
+            });
+        }
+
+        function observeFadeIn() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        }
+
+        function triggerRandomGlitch() {
+            const targets = document.querySelectorAll('p, li, h1, h2, h3, .guest-name, .guest-role, .mid-phrase');
+            if (targets.length === 0) return;
+            const randomTarget = targets[Math.floor(Math.random() * targets.length)];
+            randomTarget.classList.add('glitch-active');
+            setTimeout(() => { randomTarget.classList.remove('glitch-active'); }, Math.random() * 400 + 100);
+            setTimeout(triggerRandomGlitch, Math.random() * 1500 + 500);
+        }
+
+        function triggerTotalDestruction() {
+            const body = document.body;
+            const flash = document.getElementById('flashOverlay');
+            const shatter = document.getElementById('shatterOverlay');
+            flash.classList.add('boom');
+            body.classList.add('shake-screen');
+            setTimeout(() => { shatter.classList.add('active'); }, 50);
+            setTimeout(() => { body.classList.remove('shake-screen'); body.classList.add('destroyed'); }, 500);
+        }
+
+        function tryPlayBGM() {
+            const bgAudio = document.getElementById('bgTheme');
+            if (bgAudio.paused) {
+                bgAudio.play().catch(error => console.log("BGM Waiting for interact"));
+            }
+        }
+        document.addEventListener('click', tryPlayBGM, { once: true });
+
+
+        // ==========================================
+        // 3. 기능: 명함 팝업 (Modal)
+        // ==========================================
+        const modal = document.getElementById('cardModal');
+        
+        function openModal(index) {
+            const data = guests[index];
+            document.getElementById('modalName').textContent = data.name;
+            document.getElementById('modalRole').textContent = data.role;
+            document.getElementById('modalAge').textContent = data.age;
+            document.getElementById('modalGender').textContent = data.gender;
+            document.getElementById('modalSpecialty').textContent = data.specialty;
+            document.getElementById('modalDistinct').textContent = data.distinct;
+            document.getElementById('modalRequest').textContent = data.request; 
+            document.getElementById('modalRoom').textContent = "RM." + data.room;
+
+            const imgContainer = document.getElementById('modalImgContainer');
+            if (data.img && data.img.trim() !== '') {
+                imgContainer.innerHTML = `<img src="${data.img}" alt="${data.name}">`;
+            } else {
+                imgContainer.innerHTML = ''; 
+            }
+            modal.classList.add('active');
+        }
+
+        function closeModal(event) { if (event.target === modal) modal.classList.remove('active'); }
+        function closeModalDirect() { modal.classList.remove('active'); }
+
+
+        // ==========================================
+        // 4. 기능: 메시지 전송 & 라우팅 (통합)
+        // ==========================================
+        function sendTransmission() {
+            const inputField = document.getElementById('userMessage');
+            const responseField = document.getElementById('transmissionResponse');
+            const message = inputField.value.trim(); // 원래 메시지
+            const lowerMsg = message.toLowerCase(); // 소문자 변환
+            const btn = document.querySelector('.transmit-btn');
+
+            if (message === "") {
+                inputField.style.borderColor = "red";
+                setTimeout(() => { inputField.style.borderColor = "#444"; }, 500);
+                return;
+            }
+
+            // 1) 일반 전송
+            btn.disabled = true;
+            btn.textContent = "SENDING...";
+            responseField.textContent = "Connecting to private frequency...";
+            responseField.classList.add('show');
+            setTimeout(() => {
+                inputField.value = "";
+                btn.textContent = "SENT";
+                btn.style.borderColor = "#333"; btn.style.color = "#333";
+                responseField.innerHTML = "<span style='color:var(--blood-color)'>[SYSTEM]:</span> 수신 확인됨. 당신의 의지는 기록되었습니다. 안개를 조심하십시오.";
+                triggerRandomGlitch();
+                setTimeout(() => { 
+                    btn.disabled = false; btn.textContent = "TRANSMIT"; btn.style = ""; responseField.classList.remove('show'); 
+                }, 3000);
+            }, 1500);
+        }
+
+
+// --- [추가] 지도 클릭 시 해당 구역 탭으로 이동 및 스크롤 ---
+        function goToDistrict(districtId) {
+            // 1. 기존 openDistrict 함수 호출하여 탭 전환
+            openDistrict(districtId);
+
+            // 2. 해당 섹션으로 부드럽게 스크롤 이동
+            const districtsSection = document.querySelector('.districts-section');
+            districtsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+
+/* =========================================
+           [추가된 코드] 인트로 및 잠금 해제 로직
+           ========================================= */
+        
+        const runes = ['ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛖ', 'ᛗ', 'ᛚ', 'ᛜ', 'ᛟ', 'ᛞ'];
+        const introLayer = document.getElementById('introLayer');
+        const lockScreen = document.getElementById('lockScreen');
+        const runeContainer = document.getElementById('runeContainer');
+        const lightContainer = document.getElementById('lightContainer');
+        const introText = document.getElementById('introText');
+        const gateKey = document.getElementById('gateKey');
+        const mainWrapper = document.getElementById('main-wrapper');
+        const statusText = document.getElementById('statusText');
+        
+        let introInterval;
+        let lightInterval;
+
+        function startIntro() {
+            // 1) 룬 문자 생성
+            introInterval = setInterval(() => {
+                const rune = document.createElement('div');
+                rune.classList.add('floating-rune');
+                rune.innerText = runes[Math.floor(Math.random() * runes.length)];
+                rune.style.left = Math.random() * 100 + 'vw';
+                rune.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                
+                const duration = Math.random() * 5 + 8;
+                rune.style.animationDuration = duration + 's';
+                
+                runeContainer.appendChild(rune);
+                setTimeout(() => { rune.remove(); }, duration * 1000);
+            }, 150);
+
+            // 2) 불길한 청록색 빛 (단일, 느린 빈도)
+            spawnSingleLight(); // 첫 실행
+            lightInterval = setInterval(spawnSingleLight, 3500); // 3.5초마다
+
+            function spawnSingleLight() {
+                const light = document.createElement('div');
+                light.classList.add('distant-light');
+                
+                light.style.left = Math.random() * 100 + 'vw';
+                light.style.top = Math.random() * 100 + 'vh';
+                
+                const scale = Math.random() * 0.8 + 0.2; 
+                const blur = (1 - scale) * 5; 
+                light.style.transform = `scale(${scale})`;
+                light.style.filter = `blur(${blur}px)`;
+
+                const duration = Math.random() * 0.5 + 2.5;
+                light.style.animationDuration = duration + 's';
+                
+                lightContainer.appendChild(light);
+                setTimeout(() => { light.remove(); }, duration * 1000);
+            }
+
+            // 15초 후 잠금 화면으로 전환
+            setTimeout(() => {
+                clearInterval(introInterval);
+                clearInterval(lightInterval);
+                introText.style.display = 'none';
+                runeContainer.innerHTML = '';
+                lightContainer.innerHTML = '';
+                
+                lockScreen.style.display = 'flex';
+                gateKey.focus();
+            }, 15000); 
+        }
+
+        // 패스워드 입력 감지
+        gateKey.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const input = gateKey.value.trim().toUpperCase();
+                if (input === 'APPLE') {
+                    // 성공: 잠금 해제
+                    statusText.style.color = '#fff';
+                    statusText.innerText = "ACCESS GRANTED";
+                    
+                    introLayer.classList.add('hidden');
+                    
+                    setTimeout(() => {
+                        introLayer.style.display = 'none';
+                        mainWrapper.classList.add('unlocked'); 
+                        
+                        // [중요] 타자기 효과와 페이드인 시작 (화면 깨짐 효과는 뺌)
+                        typeWriter(); 
+                        observeFadeIn(); 
+                        setTimeout(triggerRandomGlitch, 1000);
+                    }, 1000);
+
+                } else {
+                    // 실패: 에러 효과
+                    gateKey.classList.add('access-denied');
+                    gateKey.value = "";
+                    statusText.style.color = "red";
+                    statusText.innerText = "ᛖᚱᚱᛟᚱ : ᛞᛖᚾᛁᛖᛞ"; 
+                    setTimeout(() => {
+                        gateKey.classList.remove('access-denied');
+                        statusText.style.color = "#444";
+                        statusText.innerText = "AWAITING INPUT";
+                    }, 800);
+                }
+            }
+        });
+
+        // [중요] 통합 초기화 함수
+        // 기존의 window.addEventListener('load', ...) 대신 이것을 사용합니다.
+        window.onload = function() {
+            startIntro(); // 인트로 시작
+            renderGuests(); // 게스트 리스트 생성
+            // observeFadeIn, typeWriter 등은 잠금 해제 후 실행됨
+        };
+    </script>
+</body>
+</html>
